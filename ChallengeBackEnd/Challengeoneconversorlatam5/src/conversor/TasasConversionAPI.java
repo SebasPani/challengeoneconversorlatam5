@@ -1,39 +1,49 @@
 package conversor;
 
 import org.json.JSONObject;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
 
 public class TasasConversionAPI {
-    public static void main(String[] args) {
-        OkHttpClient client = new OkHttpClient();
+	private double tasaCambio;
+	public double obtenerConversion(String monedaBase, String monedaAConvertir) {
+		try {
+			//String monedaBase = "USD";
+			//String monedaAConvetir = "BOB";
+			String apiKey = "8c6b917adff53df475b74bab87b90afda6504571";
+			//double suma = 10.0;
 
-        // Monedas de origen y destino
-        String baseCurrency = "USD";
-        String targetCurrency = "EUR";
+			String sitio = "https://api.getgeoapi.com/v2/currency/convert" + "?api_key=" + apiKey + "&from="
+					+ monedaBase + "&to=" + monedaAConvertir + "&format=json";
+			URL url = new URL(sitio);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.connect();
 
-        // Clave de acceso a la API
-        String apiKey = "0e217c205c4132a39bab32a2"; // Reemplaza con tu clave de acceso
+			int codigoRespuesta = conn.getResponseCode();
 
-        // URL de la API
-        String url = "https://v6.exchangeratesapi.io/api/latest?access_key=" + apiKey
-                + "&base=" + baseCurrency + "&symbols=" + targetCurrency;
+			if (codigoRespuesta != 200) {
+				throw new RuntimeException("HttpResponseCode: " + codigoRespuesta);
+			} else {
+				StringBuilder informacion = new StringBuilder();
+				Scanner scanner = new Scanner(url.openStream());
 
-        Request request = new Request.Builder().url(url).build();
+				while (scanner.hasNext()) {
+					informacion.append(scanner.nextLine());
+				}
 
-        try {
-            Response response = client.newCall(request).execute();
-            String jsonData = response.body().string();
-
-            JSONObject jsonObject = new JSONObject(jsonData);
-            double exchangeRate = jsonObject.getJSONObject("rates").getDouble(targetCurrency);
-
-            System.out.println("La tasa de conversión de " + baseCurrency + " a " + targetCurrency + " es: " + exchangeRate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+				scanner.close();
+				
+				JSONObject data = new JSONObject(informacion.toString());
+				this.tasaCambio = data.getJSONObject("rates").getJSONObject(monedaAConvertir).getDouble("rate");
+				//this.montoCambiado = data.getJSONObject("rates").getJSONObject(monedaAConvertir).getDouble("rate_for_amount");	
+				//System.out.println(tasaCambio);
+				//System.out.println(montoCambiado);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return this.tasaCambio;
+	}
 }

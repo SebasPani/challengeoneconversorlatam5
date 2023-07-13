@@ -3,7 +3,11 @@ package panel;
 import javax.swing.JOptionPane;
 
 public class SeleccionDeConversion {
-	 public static void mostrar() {
+
+	private String base = "ARG";
+	private String aConvertir = "USD";
+	private boolean estado = false;
+	 public void mostrar() {
 		 	String[] opciones = { "Pesos a Dolares", "Pesos a Euros",
 		 			"Pesos a Libras Esterlinas", "Pesos a Yen Japonés", "Pesos a Won sul-coreano",
 		 			"Dolares a Pesos", "Euros a Pesos", "Libras Esterlinas a Pesos", "Yen Japonés a Pesos",
@@ -15,7 +19,10 @@ public class SeleccionDeConversion {
 	        if (opcionSeleccionada != null) {
 	            switch (opcionSeleccionada) {
 	                case "Pesos a Dolares":
-	                	InsertarValorConvertir.mostrar();
+	                	this.base = "ARS";
+	                	this.aConvertir = "USD";
+	                	this.estado = true;
+	                	//InsertarValorConvertir.mostrar();
 	                    break;
 	                case "Pesos a Euros":
 	                    // Lógica para el conversor de temperatura
@@ -58,4 +65,19 @@ public class SeleccionDeConversion {
 	            }
 	        }
 	    }
+	public boolean getEstado() {
+		return this.estado;
+	}
+	public String getBase() {
+		return base;
+	}
+	public void setBase(String base) {
+		this.base = base;
+	}
+	public String getaConvertir() {
+		return aConvertir;
+	}
+	public void setaConvertir(String aConvertir) {
+		this.aConvertir = aConvertir;
+	}
 }
